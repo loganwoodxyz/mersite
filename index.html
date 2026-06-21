@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  html{scroll-behavior:smooth;}
+  .ph{position:relative;overflow:hidden;}
+  .ph::after{content:attr(data-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(60,55,70,.38);text-align:center;padding:8px;}
+
+  /* ── Progressive content reveal (drawn in on scroll). Default = visible, so no-JS is safe. ── */
+  .js-ready [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .js-ready [data-reveal].is-visible{opacity:1;transform:none;}
+
+  /* ── Keyboard accessibility ── */
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #2F9BC4;outline-offset:3px;}
+  input,textarea{font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:#c9b6c0;}
+
+  /* Blob floats — compositor-only (transform + opacity) */
+  @keyframes blob-a {
+    0%   { transform:translate(0px,   0px)  scale(1);    opacity:1; }
+    20%  { transform:translate(60px, -50px) scale(1.12); opacity:.8; }
+    45%  { transform:translate(30px, -90px) scale(1.06); opacity:.6; }
+    70%  { transform:translate(-40px,-50px) scale(.94);  opacity:.85; }
+    100% { transform:translate(0px,   0px)  scale(1);    opacity:1; }
+  }
+  @keyframes blob-b {
+    0%   { transform:translate(0px,  0px)   scale(1);    opacity:.9; }
+    30%  { transform:translate(-70px,40px)  scale(1.15); opacity:.65; }
+    65%  { transform:translate(-30px,80px)  scale(.92);  opacity:.8; }
+    100% { transform:translate(0px,  0px)   scale(1);    opacity:.9; }
+  }
+  @keyframes blob-c {
+    0%   { transform:translate(0px,  0px)  scale(1);    opacity:.85; }
+    25%  { transform:translate(50px, 65px) scale(1.1);  opacity:.6; }
+    55%  { transform:translate(20px, 30px) scale(1.04); opacity:.9; }
+    80%  { transform:translate(-30px,12px) scale(.96);  opacity:.7; }
+    100% { transform:translate(0px,  0px)  scale(1);    opacity:.85; }
+  }
+  @keyframes blob-d {
+    0%   { transform:translate(0px,  0px)   scale(1);    opacity:.8; }
+    35%  { transform:translate(-55px,-65px) scale(1.18); opacity:.6; }
+    72%  { transform:translate(25px, -35px) scale(.88);  opacity:.75; }
+    100% { transform:translate(0px,  0px)   scale(1);    opacity:.8; }
+  }
+  @keyframes wave-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+  /* ── Respect reduced-motion: freeze ambient motion, show content immediately ── */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+    .js-ready [data-reveal]{opacity:1 !important;transform:none !important;}
+  }
+
+  /* ── Layout ── */
+  .nav-desktop{display:flex;align-items:center;gap:32px;}
+  .hamburger-btn{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
+  .hamburger-btn span{display:block;width:24px;height:2px;background:#3a3a4a;border-radius:2px;}
+  .hero-inner{display:flex;align-items:stretch;min-height:560px;}
+  .hero-left{flex:1;padding:80px 64px;}
+  .hero-right{flex:1;position:relative;padding:40px 56px 40px 0;}
+  .philosophy-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1000px;margin:0 auto;position:relative;}
+  .about-inner{display:flex;gap:60px;align-items:center;max-width:1080px;margin:0 auto;}
+  .about-photo{flex:none;width:400px;height:460px;}
+  .hours-inner{display:flex;}
+  .hours-map{flex:1;min-height:400px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  .section-px{padding-left:64px;padding-right:64px;}
+  @media(max-width:900px){
+    .philosophy-cards{grid-template-columns:1fr 1fr;}
+    .about-photo{width:300px;height:360px;}
+  }
+  @media(max-width:767px){
+    .nav-desktop{display:none;}
+    .hamburger-btn{display:flex;}
+    .hero-inner{flex-direction:column;min-height:unset;}
+    .hero-left{padding:52px 24px 36px;}
+    .hero-right{padding:0 24px 40px;min-height:280px;}
+    .hero-right .ph{height:260px !important;}
+    .philosophy-cards{grid-template-columns:1fr;}
+    .about-inner{flex-direction:column;gap:32px;}
+    .about-photo{width:100%;height:280px;}
+    .hours-inner{flex-direction:column;}
+    .hours-map{min-height:240px;}
+    .form-grid{grid-template-columns:1fr;}
+    .section-px{padding-left:24px;padding-right:24px;}
+    .hero-h1{font-size:38px !important;}
+    .section-h2{font-size:28px !important;}
+    .trust-row{gap:10px !important;}
+    .nav-pad{padding-left:24px !important;padding-right:24px !important;}
+    .footer-inner{flex-direction:column;gap:16px;text-align:center;}
+  }
+</style>
+<script>document.documentElement.classList.add('js-ready');</script>
+</helmet>
+
+<template id="__bundler_thumbnail" data-bg-color="#FFF3D6">
+  <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="500" fill="#FFF3D6"/>
+    <circle cx="120" cy="180" r="180" fill="rgba(247,168,196,.38)"/>
+    <circle cx="680" cy="320" r="200" fill="rgba(139,209,124,.32)"/>
+    <circle cx="520" cy="100" r="140" fill="rgba(251,201,91,.35)"/>
+    <path d="M0,400 C150,370 300,430 450,400 C600,370 700,420 800,400 L800,500 L0,500 Z" fill="#E2F3FB"/>
+    <rect x="310" y="200" width="22" height="52" rx="11" fill="#F7A8C4"/>
+    <rect x="342" y="200" width="22" height="52" rx="11" fill="#FBC95B"/>
+    <rect x="374" y="200" width="22" height="52" rx="11" fill="#5BC0DE"/>
+    <rect x="240" y="272" width="320" height="12" rx="6" fill="rgba(46,46,56,.18)"/>
+    <rect x="290" y="296" width="220" height="8" rx="4" fill="rgba(46,46,56,.1)"/>
+  </svg>
+</template>
+
+<div style="min-width:100%;min-height:100vh;background:#fff;font-family:'Mulish',sans-serif;color:#3a3a4a;">
+
+  <!-- ══ HEADER / NAV ══ -->
+  <header style="position:sticky;top:0;z-index:200;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);">
+    <div class="nav-pad" style="display:flex;align-items:center;justify-content:space-between;padding:18px 64px;">
+      <a href="#top" aria-label="Mia's Tiny Treasures — home" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="display:flex;gap:4px;" aria-hidden="true">
+          <span style="width:10px;height:22px;border-radius:8px;background:#F7A8C4;display:block;"></span>
+          <span style="width:10px;height:22px;border-radius:8px;background:#FBC95B;display:block;"></span>
+          <span style="width:10px;height:22px;border-radius:8px;background:#5BC0DE;display:block;"></span>
+        </div>
+        <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#3a3a4a;">Mia's Tiny Treasures</span>
+      </a>
+      <nav class="nav-desktop" aria-label="Primary" style="font-weight:600;font-size:15px;color:#6a6a78;">
+        <a href="#philosophy" style="text-decoration:none;color:#6a6a78;">Philosophy</a>
+        <a href="#about" style="text-decoration:none;color:#6a6a78;">About</a>
+        <a href="#hours" style="text-decoration:none;color:#6a6a78;">Hours</a>
+        <a href="#contact" style="text-decoration:none;background:#F7679E;color:#fff;padding:11px 24px;border-radius:30px;font-weight:700;box-shadow:0 4px 16px rgba(247,103,158,.3);">Inquire Now</a>
+      </nav>
+      <button class="hamburger-btn" onClick="{{ toggleMenu }}" aria-label="Toggle navigation menu" aria-expanded="{{ menuOpen }}">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Mobile" style="background:#fff;border-top:1px solid rgba(0,0,0,.06);padding:16px 24px;display:flex;flex-direction:column;gap:0;">
+        <a href="#philosophy" onClick="{{ closeMenu }}" style="display:block;text-decoration:none;color:#3a3a4a;font-weight:600;font-size:17px;padding:14px 0;border-bottom:1px solid #f0f0f0;">Philosophy</a>
+        <a href="#about" onClick="{{ closeMenu }}" style="display:block;text-decoration:none;color:#3a3a4a;font-weight:600;font-size:17px;padding:14px 0;border-bottom:1px solid #f0f0f0;">About</a>
+        <a href="#hours" onClick="{{ closeMenu }}" style="display:block;text-decoration:none;color:#3a3a4a;font-weight:600;font-size:17px;padding:14px 0;border-bottom:1px solid #f0f0f0;">Hours</a>
+        <a href="#contact" onClick="{{ closeMenu }}" style="display:block;text-decoration:none;background:#F7679E;color:#fff;font-weight:700;font-size:17px;padding:14px 20px;border-radius:16px;margin-top:12px;text-align:center;">Inquire Now</a>
+      </nav>
+    </sc-if>
+  </header>
+
+  <main>
+
+  <!-- ══ HERO — paints instantly (no reveal); overflow:hidden contains blobs + wave ══ -->
+  <section id="top" aria-label="Welcome" style="background:#FFF3D6;position:relative;overflow:hidden;scroll-margin-top:72px;">
+    <div style="position:absolute;top:80px;left:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(247,168,196,.55) 0%,transparent 55%);pointer-events:none;will-change:transform,opacity;animation:blob-a 20s ease-in-out infinite;"></div>
+    <div style="position:absolute;bottom:-280px;left:28%;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(139,209,124,.5) 0%,transparent 55%);pointer-events:none;will-change:transform,opacity;animation:blob-b 27s ease-in-out infinite;animation-delay:-9s;"></div>
+    <div style="position:absolute;top:15%;right:-150px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(251,201,91,.45) 0%,transparent 55%);pointer-events:none;will-change:transform,opacity;animation:blob-c 22s ease-in-out infinite;animation-delay:-4s;"></div>
+    <div class="hero-inner">
+      <div class="hero-left" style="display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+        <div style="display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap;">
+          <span style="background:#F7A8C4;color:#c42f6e;font-weight:700;font-size:13px;padding:6px 16px;border-radius:30px;">Infants &amp; Toddlers</span>
+          <span style="background:#CDE7F0;color:#2074a0;font-weight:700;font-size:13px;padding:6px 16px;border-radius:30px;">Cedar Rapids, IA</span>
+        </div>
+        <h1 class="hero-h1" style="font-family:'Fredoka';font-weight:600;font-size:58px;line-height:1.04;margin:0 0 22px;color:#2e2e38;">Big love for your<br>littlest ones.</h1>
+        <p style="font-size:19px;line-height:1.65;color:#5e5e6c;margin:0 0 36px;max-width:440px;">A joyful, home-based daycare with small groups and a caregiver who's been doing this for over 15 years — so your baby gets real, devoted attention every day.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="#contact" style="text-decoration:none;background:#F7679E;color:#fff;font-weight:700;font-size:17px;padding:17px 32px;border-radius:30px;box-shadow:0 8px 24px rgba(247,103,158,.38);">Start Enrollment Inquiry</a>
+          <a href="#philosophy" style="text-decoration:none;background:#fff;color:#3a3a4a;font-weight:700;font-size:17px;padding:17px 32px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.07);">Our Approach →</a>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="ph" data-label="photo · happy toddlers playing" style="height:100%;min-height:320px;border-radius:28px;background:repeating-linear-gradient(45deg,#CDE7F0 0 14px,#E0F2F8 14px 28px);box-shadow:0 24px 48px rgba(58,58,74,.13);"></div>
+      </div>
+    </div>
+    <div style="line-height:0;position:relative;z-index:1;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 60" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:60px;will-change:transform;animation:wave-scroll 24s linear infinite;">
+          <path d="M0,30 C200,60 380,5 540,35 C700,58 860,6 1080,30 C1280,60 1460,5 1620,35 C1780,58 1940,6 2160,30 L2160,60 L0,60 Z" fill="#ffffff"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TRUST BADGES ══ -->
+  <section aria-label="Credentials" style="background:#fff;overflow:hidden;">
+    <div data-reveal style="padding:20px 24px 52px;">
+      <div class="trust-row" style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:12px;background:#FFF0F6;border-radius:50px;padding:16px 28px;">
+          <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#F7679E;">15+</span>
+          <span style="font-weight:700;font-size:15px;color:#8a5a70;">years of experience</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#E5F3FB;border-radius:50px;padding:16px 28px;">
+          <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#2F9BC4;">CPR</span>
+          <span style="font-weight:700;font-size:15px;color:#3a6e86;">certified caregiver</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#EAF7E5;border-radius:50px;padding:16px 28px;">
+          <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#4FA83C;">Small</span>
+          <span style="font-weight:700;font-size:15px;color:#3d6e34;">group size</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#FFF4DA;border-radius:50px;padding:16px 28px;">
+          <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#D9980A;">✓</span>
+          <span style="font-weight:700;font-size:15px;color:#7a6030;">mandatory reporter</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#EFEAFC;border-radius:50px;padding:16px 28px;">
+          <span style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#8463C9;">✓</span>
+          <span style="font-weight:700;font-size:15px;color:#5a4480;">universal precautions</span>
+        </div>
+      </div>
+    </div>
+    <div style="line-height:0;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 60" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:60px;will-change:transform;animation:wave-scroll 19s linear infinite;">
+          <path d="M0,30 C180,0 420,60 680,22 C860,4 980,52 1080,30 C1260,0 1500,60 1760,22 C1940,4 2060,52 2160,30 L2160,60 L0,60 Z" fill="#E2F3FB"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PHILOSOPHY ══ -->
+  <section id="philosophy" aria-label="Our philosophy" style="background:#E2F3FB;position:relative;overflow:hidden;scroll-margin-top:72px;">
+    <div style="position:absolute;top:100px;right:-200px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(91,192,222,.38) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-d 22s ease-in-out infinite;animation-delay:-7s;"></div>
+    <div style="position:absolute;bottom:-260px;left:-180px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(139,209,124,.4) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-c 28s ease-in-out infinite;animation-delay:-14s;"></div>
+    <div style="position:absolute;top:35%;left:42%;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(247,168,196,.32) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-a 17s ease-in-out infinite;animation-delay:-3s;"></div>
+    <div class="section-px" style="padding-top:80px;padding-bottom:60px;position:relative;z-index:1;">
+      <div data-reveal style="text-align:center;max-width:620px;margin:0 auto 54px;">
+        <div style="font-family:'Mulish';font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#2F9BC4;margin-bottom:14px;">Our Philosophy</div>
+        <h2 class="section-h2" style="font-family:'Fredoka';font-weight:600;font-size:44px;line-height:1.1;margin:0 0 18px;color:#2e2e38;">Because childhood isn't something to rush through. It's something to treasure.</h2>
+        <p style="font-size:18px;line-height:1.65;color:#4a6c7a;margin:0;">My goal is to create a warm, home-away-from-home where children feel safe, loved, and excited to learn each day — and where families feel confident knowing their little one is known, valued, and genuinely cared for.</p>
+      </div>
+      <div class="philosophy-cards">
+        <div data-reveal style="background:#fff;border-radius:28px;padding:36px 30px;box-shadow:0 8px 32px rgba(47,155,196,.1);">
+          <div style="width:56px;height:56px;border-radius:18px;background:#FDEBF2;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px;">🎨</div>
+          <h3 style="font-family:'Fredoka';font-weight:600;font-size:22px;margin:0 0 10px;color:#2e2e38;">Play-based learning</h3>
+          <p style="font-size:15px;line-height:1.65;color:#6a7a82;margin:0;">Sensory activities, crafts, books, music, and movement — every day is hands-on, curiosity-driven, and full of exploration.</p>
+        </div>
+        <div data-reveal style="background:#fff;border-radius:28px;padding:36px 30px;box-shadow:0 8px 32px rgba(47,155,196,.1);transition-delay:.09s;">
+          <div style="width:56px;height:56px;border-radius:18px;background:#EAF7E5;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px;">📋</div>
+          <h3 style="font-family:'Fredoka';font-weight:600;font-size:22px;margin:0 0 10px;color:#2e2e38;">Daily updates</h3>
+          <p style="font-size:15px;line-height:1.65;color:#6a7a82;margin:0;">A shared Google Doc with meals, naps, diapering, milestones, and photos — so you never miss a moment of their day.</p>
+        </div>
+        <div data-reveal style="background:#fff;border-radius:28px;padding:36px 30px;box-shadow:0 8px 32px rgba(47,155,196,.1);transition-delay:.18s;">
+          <div style="width:56px;height:56px;border-radius:18px;background:#FFF4DA;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px;">🏡</div>
+          <h3 style="font-family:'Fredoka';font-weight:600;font-size:22px;margin:0 0 10px;color:#2e2e38;">Family-centered care</h3>
+          <p style="font-size:15px;line-height:1.65;color:#6a7a82;margin:0;">Every child who walks through our door is treated like family — encouraged to build confidence, independence, and happy memories.</p>
+        </div>
+      </div>
+    </div>
+    <div style="line-height:0;position:relative;z-index:1;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 64" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:64px;will-change:transform;animation:wave-scroll 29s linear infinite;">
+          <path d="M0,32 C160,64 440,0 640,32 C820,58 980,8 1080,32 C1240,64 1520,0 1720,32 C1900,58 2060,8 2160,32 L2160,64 L0,64 Z" fill="#ffffff"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ══ -->
+  <section id="about" aria-label="About Marissa" style="background:#fff;position:relative;overflow:hidden;scroll-margin-top:72px;">
+    <div style="position:absolute;top:80px;right:-160px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(132,99,201,.2) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-b 24s ease-in-out infinite;animation-delay:-6s;"></div>
+    <div style="position:absolute;bottom:-200px;left:-160px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(247,168,196,.25) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-a 31s ease-in-out infinite;animation-delay:-18s;"></div>
+    <div class="section-px" style="padding-top:80px;padding-bottom:80px;position:relative;z-index:1;">
+      <div class="about-inner">
+        <div data-reveal class="about-photo ph" data-label="photo · Marissa with the kiddos" style="border-radius:32px;background:repeating-linear-gradient(135deg,#EFEAFC 0 14px,#F7F4FD 14px 28px);box-shadow:0 20px 48px rgba(132,99,201,.12);"></div>
+        <div data-reveal style="flex:1;transition-delay:.1s;">
+          <div style="font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8463C9;margin-bottom:14px;">About Marissa</div>
+          <h2 class="section-h2" style="font-family:'Fredoka';font-weight:600;font-size:40px;line-height:1.1;margin:0 0 22px;color:#2e2e38;">Hi, I'm Marissa!</h2>
+          <p style="font-size:18px;line-height:1.7;color:#5e5e6c;margin:0 0 20px;">I'm a wife to Logan and a mom to our daughter, Mia — the inspiration behind this program and the reason I want every child in my care to experience a childhood filled with wonder, creativity, kindness, and happy memories.</p>
+          <p style="font-size:18px;line-height:1.7;color:#5e5e6c;margin:0 0 32px;">I have over 15 years of experience working with children from infancy through elementary age, most recently as a Lead Infant Teacher. I hold a Bachelor's Degree from the University of Iowa in Sociology with a minor in American Sign Language. I love photography, crafts, and capturing the little moments that make childhood so special — and I bring that creativity into our days together.</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <span aria-hidden="true" style="flex:none;width:30px;height:30px;border-radius:50%;background:#EAF7E5;display:flex;align-items:center;justify-content:center;color:#4FA83C;font-weight:700;font-size:15px;">✓</span>
+              <span style="font-size:17px;color:#3a3a4a;font-weight:600;">CPR certified &amp; mandatory reporter</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <span aria-hidden="true" style="flex:none;width:30px;height:30px;border-radius:50%;background:#FDEBF2;display:flex;align-items:center;justify-content:center;color:#F7679E;font-weight:700;font-size:15px;">✓</span>
+              <span style="font-size:17px;color:#3a3a4a;font-weight:600;">B.S. Sociology, University of Iowa · ASL minor</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <span aria-hidden="true" style="flex:none;width:30px;height:30px;border-radius:50%;background:#FFF4DA;display:flex;align-items:center;justify-content:center;color:#D9980A;font-weight:700;font-size:15px;">✓</span>
+              <span style="font-size:17px;color:#3a3a4a;font-weight:600;">Universal precautions training</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="line-height:0;position:relative;z-index:1;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 60" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:60px;will-change:transform;animation:wave-scroll 21s linear infinite;">
+          <path d="M0,28 C240,0 520,58 780,24 C940,6 1020,46 1080,28 C1320,0 1600,58 1860,24 C2020,6 2100,46 2160,28 L2160,60 L0,60 Z" fill="#EAF7E5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ HOURS ══ -->
+  <section id="hours" aria-label="Hours and location" style="background:#EAF7E5;position:relative;overflow:hidden;scroll-margin-top:72px;">
+    <div style="position:absolute;bottom:-240px;left:-160px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(139,209,124,.48) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-c 25s ease-in-out infinite;animation-delay:-11s;"></div>
+    <div style="position:absolute;top:10%;right:40%;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(251,201,91,.35) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-a 19s ease-in-out infinite;animation-delay:-5s;"></div>
+    <div class="hours-inner" style="position:relative;z-index:1;">
+      <div data-reveal class="section-px" style="flex:1;padding-top:80px;padding-bottom:80px;">
+        <div style="font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#4FA83C;margin-bottom:14px;">Hours &amp; Location</div>
+        <h2 class="section-h2" style="font-family:'Fredoka';font-weight:600;font-size:38px;margin:0 0 32px;color:#2e2e38;">Open when you need us.</h2>
+        <div style="background:#fff;border-radius:22px;padding:10px 4px;margin-bottom:22px;box-shadow:0 6px 24px rgba(79,168,60,.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px;border-bottom:1px solid #F0F8EC;">
+            <span style="font-size:17px;color:#6a7a6a;font-weight:600;">Monday – Friday</span>
+            <span style="font-family:'Fredoka';font-weight:600;font-size:20px;color:#3a3a4a;">7:00 AM – 5:30 PM</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px;">
+            <span style="font-size:17px;color:#6a7a6a;font-weight:600;">Weekends</span>
+            <span style="font-family:'Fredoka';font-weight:600;font-size:20px;color:#b0b0bc;">Closed</span>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:22px;padding:22px 26px;box-shadow:0 6px 24px rgba(79,168,60,.1);">
+          <div style="font-family:'Fredoka';font-weight:600;font-size:20px;color:#3a3a4a;margin-bottom:6px;">📍 Cedar Rapids, Iowa</div>
+          <div style="font-size:15px;color:#6a7a6a;line-height:1.6;">Exact address is shared privately once your tour is booked — keeping every family's privacy a priority.</div>
+        </div>
+      </div>
+      <div class="hours-map ph" data-label="map · Cedar Rapids neighborhood" style="background:repeating-linear-gradient(45deg,#D4EDCA 0 14px,#E6F5DF 14px 28px);"></div>
+    </div>
+    <div style="line-height:0;position:relative;z-index:1;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 60" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:60px;will-change:transform;animation:wave-scroll 16s linear infinite;">
+          <path d="M0,30 C220,60 500,0 740,42 C880,58 1000,14 1080,30 C1300,60 1580,0 1820,42 C1960,58 2080,14 2160,30 L2160,60 L0,60 Z" fill="#FDEBF2"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FORM ══ -->
+  <section id="contact" aria-label="Enrollment inquiry" style="background:#FDEBF2;position:relative;overflow:hidden;scroll-margin-top:72px;">
+    <div style="position:absolute;top:80px;right:-160px;width:680px;height:680px;border-radius:50%;background:radial-gradient(circle,rgba(247,168,196,.5) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-d 23s ease-in-out infinite;animation-delay:-8s;"></div>
+    <div style="position:absolute;bottom:-220px;left:6%;width:580px;height:580px;border-radius:50%;background:radial-gradient(circle,rgba(251,201,91,.4) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-b 20s ease-in-out infinite;animation-delay:-13s;"></div>
+    <div style="position:absolute;top:25%;left:-160px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(139,209,124,.3) 0%,transparent 52%);pointer-events:none;will-change:transform,opacity;animation:blob-c 27s ease-in-out infinite;animation-delay:-2s;"></div>
+    <div class="section-px" style="padding-top:80px;padding-bottom:70px;position:relative;z-index:1;">
+      <div style="max-width:700px;margin:0 auto;">
+        <div data-reveal style="text-align:center;margin-bottom:40px;">
+          <h2 class="section-h2" style="font-family:'Fredoka';font-weight:600;font-size:44px;margin:0 0 12px;color:#2e2e38;">Let's find your little one a spot.</h2>
+          <p style="font-size:18px;color:#8a6070;margin:0;">Fill in a few details and Marissa will be in touch within one business day.</p>
+        </div>
+        <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="background:#fff;border-radius:28px;padding:56px 44px;box-shadow:0 16px 48px rgba(247,103,158,.12);text-align:center;">
+            <div aria-hidden="true" style="width:72px;height:72px;border-radius:50%;background:#EAF7E5;display:flex;align-items:center;justify-content:center;font-size:34px;color:#4FA83C;margin:0 auto 22px;">✓</div>
+            <h3 style="font-family:'Fredoka';font-weight:600;font-size:28px;margin:0 0 10px;color:#2e2e38;">Thank you!</h3>
+            <p style="font-size:17px;line-height:1.6;color:#6a6a78;margin:0;">Your inquiry is on its way to Marissa. She'll reach out within one business day to say hello and set up a visit.</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+          <form data-reveal onSubmit="{{ submitForm }}" style="background:#fff;border-radius:28px;padding:44px;box-shadow:0 16px 48px rgba(247,103,158,.12);transition-delay:.08s;">
+            <div class="form-grid">
+              <div>
+                <label for="f-name" style="display:block;font-size:14px;font-weight:700;color:#6a5a62;margin-bottom:8px;">Parent name</label>
+                <input id="f-name" name="parentName" type="text" autocomplete="name" required placeholder="Your name" style="width:100%;height:52px;background:#FDF6F9;border:1.5px solid #EDD6E3;border-radius:14px;padding:0 18px;font-size:16px;color:#3a3a4a;outline:none;transition:border-color .2s,background .2s;" style-focus="border-color:#F7679E;background:#fff;">
+              </div>
+              <div>
+                <label for="f-contact" style="display:block;font-size:14px;font-weight:700;color:#6a5a62;margin-bottom:8px;">Phone or email</label>
+                <input id="f-contact" name="contact" type="text" inputmode="email" autocomplete="email" required placeholder="you@email.com" style="width:100%;height:52px;background:#FDF6F9;border:1.5px solid #EDD6E3;border-radius:14px;padding:0 18px;font-size:16px;color:#3a3a4a;outline:none;transition:border-color .2s,background .2s;" style-focus="border-color:#F7679E;background:#fff;">
+              </div>
+              <div>
+                <label for="f-age" style="display:block;font-size:14px;font-weight:700;color:#6a5a62;margin-bottom:8px;">Child's age</label>
+                <input id="f-age" name="childAge" type="text" placeholder="e.g. 8 months" style="width:100%;height:52px;background:#FDF6F9;border:1.5px solid #EDD6E3;border-radius:14px;padding:0 18px;font-size:16px;color:#3a3a4a;outline:none;transition:border-color .2s,background .2s;" style-focus="border-color:#F7679E;background:#fff;">
+              </div>
+              <div>
+                <label for="f-date" style="display:block;font-size:14px;font-weight:700;color:#6a5a62;margin-bottom:8px;">Desired start date</label>
+                <input id="f-date" name="startDate" type="date" style="width:100%;height:52px;background:#FDF6F9;border:1.5px solid #EDD6E3;border-radius:14px;padding:0 18px;font-size:16px;color:#3a3a4a;outline:none;transition:border-color .2s,background .2s;" style-focus="border-color:#F7679E;background:#fff;">
+              </div>
+            </div>
+            <div style="margin-bottom:30px;">
+              <label for="f-notes" style="display:block;font-size:14px;font-weight:700;color:#6a5a62;margin-bottom:8px;">Anything I should know about your little one?</label>
+              <textarea id="f-notes" name="notes" rows="3" placeholder="Allergies, nap routines, questions — anything at all." style="width:100%;background:#FDF6F9;border:1.5px solid #EDD6E3;border-radius:14px;padding:14px 18px;font-size:16px;color:#3a3a4a;line-height:1.5;outline:none;resize:vertical;min-height:100px;transition:border-color .2s,background .2s;" style-focus="border-color:#F7679E;background:#fff;"></textarea>
+            </div>
+            <div style="text-align:center;">
+              <button type="submit" style="display:inline-block;background:#F7679E;color:#fff;font-weight:700;font-size:18px;padding:17px 52px;border:none;border-radius:30px;cursor:pointer;box-shadow:0 10px 28px rgba(247,103,158,.38);transition:background .2s,transform .2s;" style-hover="background:#ef4f8d;transform:translateY(-1px);">Send My Inquiry</button>
+            </div>
+          </form>
+        </sc-if>
+      </div>
+    </div>
+    <div style="line-height:0;position:relative;z-index:1;">
+      <div style="overflow:hidden;width:100%;line-height:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 60" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:200%;height:60px;will-change:transform;animation:wave-scroll 33s linear infinite;">
+          <path d="M0,28 C180,0 420,56 680,22 C840,4 980,48 1080,28 C1260,0 1500,56 1760,22 C1920,4 2060,48 2160,28 L2160,60 L0,60 Z" fill="#2e2e38"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer style="background:#2e2e38;padding:44px 64px;">
+    <div class="footer-inner" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+      <div>
+        <div style="font-family:'Fredoka';font-weight:600;font-size:22px;color:#fff;margin-bottom:6px;">Mia's Tiny Treasures</div>
+        <div style="font-size:14px;color:#8a8a96;">In-home childcare · Cedar Rapids, Iowa</div>
+      </div>
+      <nav aria-label="Footer" style="display:flex;gap:20px;font-size:14px;font-weight:600;color:#8a8a96;flex-wrap:wrap;justify-content:center;">
+        <a href="#philosophy" style="text-decoration:none;color:#8a8a96;">Philosophy</a>
+        <a href="#about" style="text-decoration:none;color:#8a8a96;">About</a>
+        <a href="#hours" style="text-decoration:none;color:#8a8a96;">Hours &amp; Location</a>
+        <a href="#contact" style="text-decoration:none;color:#F7A8C4;">Enrollment Inquiry</a>
+      </nav>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false, submitted: false };
+
+  componentDidMount() {
+    // Progressive content reveal — McMaster-style: hero is instant, the rest draws in on scroll.
+    try {
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = Array.from(document.querySelectorAll('[data-reveal]'));
+      if (reduce || !('IntersectionObserver' in window) || !els.length) {
+        els.forEach(el => el.classList.add('is-visible'));
+        return;
+      }
+      this._io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            en.target.classList.add('is-visible');
+            this._io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(el => this._io.observe(el));
+    } catch (e) {
+      document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._io) this._io.disconnect();
+  }
+
+  renderVals() {
+    return {
+      menuOpen: this.state.menuOpen,
+      submitted: this.state.submitted,
+      notSubmitted: !this.state.submitted,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      submitForm: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ submitted: true }); },
+    };
+  }
+}
+</script>
+</body>
+</html>
